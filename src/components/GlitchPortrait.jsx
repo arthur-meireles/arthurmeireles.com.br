@@ -1,11 +1,10 @@
 import { useEffect, useRef } from 'react'
 import { gsap, reducedMotion } from '../lib/motion.js'
 
-// Retrato do hero com 2 poses x 2 versões (preto e branco / colorida).
-// - Parado: preto e branco, alternando de pose a cada alguns segundos.
-// - Hover (ou toque): a pose atual "glitcha" para a versão colorida.
-// Cada pose compartilha a mesma moldura entre as versões P&B e colorida, então o glitch fica alinhado.
-const POSES = ['a', 'b']
+// Retrato do hero em 2 versões (preto e branco / colorida).
+// - Parado: preto e branco.
+// - Hover (ou toque): "glitcha" para a versão colorida.
+const POSES = ['a']
 const src = (pose, version) => `/img/arthur-${pose}-${version}.webp`
 const CYCLE_MS = 6000
 
@@ -75,14 +74,17 @@ export default function GlitchPortrait({ className = '' }) {
     el.addEventListener('pointerleave', leave)
     el.addEventListener('pointerup', tap)
 
-    // Alterna a pose sozinha enquanto o hero está no topo e ninguém está em cima da foto.
-    const timer = setInterval(() => {
-      if (still || document.hidden || window.scrollY > 40 || state.current.color) return
-      go((state.current.pose + 1) % POSES.length, false)
-    }, CYCLE_MS)
+    // Alterna a pose caso haja mais de uma configurada.
+    const timer =
+      POSES.length > 1
+        ? setInterval(() => {
+            if (still || document.hidden || window.scrollY > 40 || state.current.color) return
+            go((state.current.pose + 1) % POSES.length, false)
+          }, CYCLE_MS)
+        : null
 
     return () => {
-      clearInterval(timer)
+      if (timer) clearInterval(timer)
       state.current.tl?.kill()
       el.removeEventListener('pointerenter', enter)
       el.removeEventListener('pointerleave', leave)

@@ -42,7 +42,7 @@ Páginas internas: `/projetos`, `/projetos/:slug`, `/blog`, `/blog/:slug`.
 - **Blog:** um arquivo `.md` por artigo em `src/content/blog/`. O nome do arquivo vira a URL. Cabeçalho: `title`, `date` (AAAA-MM-DD), `tag`, `excerpt`.
 - **Cores e tipografia:** variáveis no topo de `src/styles/global.css`
 - **Fotos pessoais:** `public/img/`
-- **Retrato do hero:** `public/img/arthur-a-*.webp` (braços cruzados) e `arthur-b-*.webp` (ajustando os óculos), cada um em `-pb` e `-cor`. O componente `src/components/GlitchPortrait.jsx` mostra a versão preto e branco, alterna de pose a cada 6 s e, no hover ou toque, faz o glitch para a colorida. As quatro imagens precisam ter o mesmo tamanho, e a preto e branco deve ser derivada da colorida para o efeito ficar alinhado. Para adicionar uma pose, salve o par de arquivos e inclua a letra em `POSES`.
+- **Retrato do hero:** `public/img/arthur-a-*.webp` (braços cruzados), em `-pb` e `-cor`. O componente `src/components/GlitchPortrait.jsx` mostra a versão preto e branco e, no hover ou toque, faz o glitch para a colorida. A versão preto e branco é derivada da colorida para o efeito ficar alinhado. Para adicionar mais poses no futuro, salve os pares de arquivos (`arthur-<letra>-pb.webp` e `arthur-<letra>-cor.webp`) e inclua a letra em `POSES`.
 - **Objetos 3D flutuantes:** `public/img/obj-*.webp`, gerados no Magnific (Nano Banana 2.1, 1:1, fundo preto puro). Entram com `<Float name="cursor" />` e só funcionam em seções escuras, porque usam `mix-blend-mode: screen` para sumir com o fundo. Para trocar, gere outra imagem com fundo `#000000` e salve com o mesmo nome.
 
 ## Estrutura
