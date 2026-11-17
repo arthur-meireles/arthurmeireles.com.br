@@ -9,7 +9,7 @@ npm install
 npm run dev
 ```
 
-`npm run build` gera a pasta `dist/` para publicar. O projeto já inclui `vercel.json` e `public/_redirects` (Netlify) para as rotas internas funcionarem ao recarregar a página.
+`npm run build` gera a pasta `dist/` para publicar. O projeto já inclui configurações para SPA nas principais plataformas (`wrangler.jsonc` para Cloudflare, `vercel.json` para Vercel e `netlify.toml` para Netlify) para as rotas internas funcionarem ao recarregar a página.
 
 ## Conceito
 
