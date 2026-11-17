@@ -300,3 +300,17 @@ fieldset.waform__field { grid-row: span 2; }
 /* ---------- Nav que some ao descer e volta ao subir ---------- */
 .nav { transition: transform 0.5s var(--ease); }
 .nav.is-hidden:not(.is-open) { transform: translateY(-110%); }
+
+/* ---------- Sem menu de contexto nem "segurar" nas imagens ---------- */
+/* No celular, segurar uma imagem abriria o menu de salvar/compartilhar; aqui o toque é interação
+   (a foto do hero troca de cor, as capas abrem projetos). Campos de formulário continuam normais. */
+img, canvas, .glitch, .polaroid, .hero__board, .flexrow {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+a, button, .chip { -webkit-tap-highlight-color: transparent; }
+
+/* Texto só para leitores de tela */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }

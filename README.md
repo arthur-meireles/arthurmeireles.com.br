@@ -39,6 +39,8 @@ Páginas internas: `/projetos`, `/projetos/:slug`, `/blog`, `/blog/:slug`.
 - **Capas dos projetos:** `public/work/<slug>/cover.png` é a capa do Behance e vira a miniatura usada em todo o site. Troque o arquivo e rode `npm run images`.
 - **Compartilhamento e SEO:** `npm run og` gera `public/og.jpg` (a imagem que aparece ao colar o link no WhatsApp ou LinkedIn), o `sitemap.xml` e o `robots.txt`. O domínio está em `scripts/make-og.mjs` e nas metatags do `index.html`; hoje é `https://arthurmeireles.com.br`.
 - **Formulário de contato:** `src/components/WhatsAppForm.jsx`. Não tem servidor: monta a mensagem e abre o WhatsApp. As opções de tipo de projeto ficam na lista `TYPES`.
+- **Projetos selecionados:** `src/components/FlexRow.jsx`, fileira infinita em WebGL próprio (sem biblioteca) que curva as capas nas bordas como vidro líquido. Corre sozinha, acelera com o scroll e aceita arrasto; clicar numa capa abre o projeto. Sem WebGL ou com movimento reduzido, vira uma fileira comum rolável. Os projetos são os marcados com `featured: true`.
+- **Menu de contexto:** o clique direito e o "segurar" no celular estão desligados no site todo (`src/main.jsx`), exceto nos campos do formulário.
 - **Arquivo no celular:** `src/components/ArchiveWheel.jsx` (roda de opções girada pelo scroll, com tique tátil em `src/lib/haptics.js`). No desktop continua a lista com prévia no hover.
 - **Capas originais:** ficam em `covers/<slug>.png`, fora do deploy; `npm run images` gera as miniaturas `thumb.webp` (1200 px) e `thumb-sm.webp` (640 px) e recomprime telas acima de 700 KB.
 - **Cache:** `public/_headers` define o cache na Cloudflare (arquivos com hash por 1 ano, imagens por 30 dias, HTML sempre revalidado).

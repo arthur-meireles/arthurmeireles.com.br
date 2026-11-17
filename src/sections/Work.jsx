@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import ArchiveWheel from '../components/ArchiveWheel.jsx'
+import FlexRow from '../components/FlexRow.jsx'
 import { Link } from 'react-router-dom'
-import { DESKTOP, gsap, MOTION_OK, revealOnScroll, ScrollTrigger, useGSAP } from '../lib/motion.js'
+import { gsap, MOTION_OK, revealOnScroll, useGSAP } from '../lib/motion.js'
 import { featured, projects } from '../content/projects.js'
 
 // No celular (e com movimento liberado) o arquivo vira a roda de opções; no desktop fica a lista com hover.
@@ -23,53 +24,13 @@ export default function Work() {
   const preview = useRef(null)
   const [hovered, setHovered] = useState(null)
 
+  // Projeto que está no centro da fileira, para a legenda.
+  const [current, setCurrent] = useState(0)
+  const onActive = useCallback((i) => setCurrent(i), [])
+
   useGSAP(
     () => {
       const mm = gsap.matchMedia()
-
-      // Desktop: a galeria de destaques anda na horizontal enquanto a seção fica presa.
-      mm.add(`${MOTION_OK} and ${DESKTOP}`, () => {
-        const track = root.current.querySelector('.work__track')
-        const distance = () => track.scrollWidth - window.innerWidth
-        // As capas inclinam de leve com a velocidade do scroll e voltam ao parar.
-        const skew = gsap.quickTo('.card__media', 'skewX', { duration: 0.5, ease: 'power3' })
-        const clamp = gsap.utils.clamp(-5, 5)
-        const settle = () => skew(0)
-        ScrollTrigger.addEventListener('scrollEnd', settle)
-
-        const tween = gsap.to(track, {
-          x: () => -distance(),
-          ease: 'none',
-          scrollTrigger: {
-            trigger: '.work__pin',
-            start: 'top top',
-            end: () => `+=${distance()}`,
-            pin: true,
-            scrub: 0.6,
-            invalidateOnRefresh: true,
-            onUpdate: (self) => skew(clamp(self.getVelocity() / -350)),
-          },
-        })
-        gsap.to('.work__progress i', {
-          scaleX: 1,
-          ease: 'none',
-          scrollTrigger: { trigger: '.work__pin', start: 'top top', end: () => `+=${distance()}`, scrub: true },
-        })
-        // Parallax interno de cada imagem, ligado ao movimento horizontal.
-        gsap.utils.toArray('.card__media img').forEach((img) => {
-          gsap.fromTo(
-            img,
-            { xPercent: -8 },
-            {
-              xPercent: 8,
-              ease: 'none',
-              scrollTrigger: { trigger: img, containerAnimation: tween, start: 'left right', end: 'right left', scrub: true },
-            }
-          )
-        })
-        return () => ScrollTrigger.removeEventListener('scrollEnd', settle)
-      })
-
       mm.add(MOTION_OK, () => {
         revealOnScroll(root.current)
         const x = gsap.quickTo(preview.current, 'x', { duration: 0.5, ease: 'power3' })
@@ -87,39 +48,32 @@ export default function Work() {
 
   return (
     <section className="work" id="projetos" ref={root}>
-      <div className="work__pin">
-        <header className="work__head wrap">
-          <p className="eyebrow mono">(02) Projetos selecionados</p>
-          <div className="work__progress"><i /></div>
-          <p className="mono work__count">{String(featured.length).padStart(2, '0')} destaques</p>
-        </header>
+      <header className="work__head wrap">
+        <p className="eyebrow mono">(02) Projetos selecionados</p>
+        <span className="work__rule" aria-hidden="true" />
+        <p className="mono work__count">{String(featured.length).padStart(2, '0')} destaques</p>
+      </header>
 
-        <div className="work__track">
-          <div className="work__intro">
-            <h2 className="display">
-              Trabalho<br />que <em className="serif">entrega.</em>
-            </h2>
-            <p>De landing pages a ERPs inteiros. Clique em qualquer projeto para ver o trabalho completo.</p>
-          </div>
+      <div className="work__intro wrap">
+        <h2 className="display" data-reveal>
+          Trabalho que <em className="serif">entrega.</em>
+        </h2>
+        <p data-reveal>De landing pages a ERPs inteiros. Arraste, role ou clique numa capa para ver o projeto completo.</p>
+      </div>
 
-          {featured.map((p, i) => (
-            <Link to={`/projetos/${p.slug}`} className="card" key={p.slug} data-cursor="Ver projeto">
-              <div className="card__media">
-                <img src={p.thumb} srcSet={p.thumbSet} sizes="(min-width: 900px) 46vw, 92vw" alt={`Tela do projeto ${p.title}`} width="1200" height="939" loading="lazy" decoding="async" />
-              </div>
-              <div className="card__info">
-                <span className="mono">{String(i + 1).padStart(2, '0')}</span>
-                <h3>{p.title}</h3>
-                <span className="mono card__type">{p.type} — {p.year}</span>
-              </div>
-            </Link>
-          ))}
+      <FlexRow projects={featured} onActive={onActive} />
 
-          <Link to="/projetos" className="work__all" data-cursor="Abrir">
-            <span className="mono">{projects.length} projetos no arquivo</span>
-            <strong className="display">Ver<br />todos <em className="serif">→</em></strong>
-          </Link>
-        </div>
+      <div className="work__caption wrap">
+        <p className="mono work__index">
+          {String(current + 1).padStart(2, '0')} / {String(featured.length).padStart(2, '0')}
+        </p>
+        <Link to={`/projetos/${featured[current].slug}`} className="work__now" data-cursor="Ver projeto" key={featured[current].slug}>
+          <strong>{featured[current].title}</strong>
+          <span className="mono">{featured[current].type} — {featured[current].year}</span>
+        </Link>
+        <Link to="/projetos" className="btn" data-magnetic>
+          Ver todos os {projects.length} <span>→</span>
+        </Link>
       </div>
 
       {wheel ? (

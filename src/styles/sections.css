@@ -160,42 +160,36 @@
 }
 
 /* ================= PROJETOS ================= */
-.work__pin { display: flex; flex-direction: column; overflow: hidden; padding-top: clamp(90px, 13vh, 130px); }
-.work__head { display: flex; align-items: center; gap: 28px; width: 100%; }
+.work { padding-top: clamp(90px, 14vh, 140px); }
+.work__head { display: flex; align-items: center; gap: 28px; }
 .work__head .eyebrow { margin: 0; }
-.work__progress { flex: 1; height: 1px; background: var(--line); }
-.work__progress i { display: block; height: 100%; background: var(--fg); transform: scaleX(0); transform-origin: left; }
+.work__rule { flex: 1; height: 1px; background: var(--line); }
 .work__count { color: var(--muted); }
+.work__intro { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px 48px; flex-wrap: wrap; margin-top: clamp(28px, 5vh, 56px); }
+.work__intro .display { font-size: clamp(44px, 7.4vw, 128px); }
+.work__intro p { color: var(--muted); max-width: 26em; font-size: 17px; }
 
-.work__track { display: flex; flex-direction: column; gap: 48px; padding: 40px var(--pad) 0; }
-.work__intro p { margin-top: 24px; color: var(--muted); max-width: 24em; font-size: 18px; }
+/* Fileira de vidro líquido (WebGL). A faixa é larga e alta para a curva das bordas ter espaço. */
+.flexrow { position: relative; height: clamp(420px, 78vh, 820px); margin-top: clamp(8px, 2vh, 24px); }
+.flexrow__canvas { display: block; width: 100%; height: 100%; touch-action: pan-y; cursor: grab; }
+.flexrow--fallback { height: auto; display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 24px var(--pad); scrollbar-width: none; }
+.flexrow--fallback::-webkit-scrollbar { display: none; }
+.flexrow__card { flex: none; width: min(78vw, 560px); scroll-snap-align: center; }
+.flexrow__card img { width: 100%; aspect-ratio: 808 / 632; object-fit: cover; border-radius: 12px; }
+.flexrow__card span { display: block; margin-top: 12px; font-weight: 600; font-size: 20px; letter-spacing: -0.03em; }
 
-.card { display: block; }
-.card__media { aspect-ratio: 808 / 632; overflow: hidden; border-radius: 14px; background: #141416; }
-.card__media img { width: 116%; max-width: none; height: 100%; margin-left: -8%; object-fit: cover; object-position: center; transition: transform 1s var(--ease); }
-.card:hover .card__media img { transform: scale(1.04); }
-.card__info { display: grid; grid-template-columns: auto 1fr auto; align-items: baseline; gap: 16px; margin-top: 18px; }
-.card__info h3 { font-size: clamp(24px, 2.4vw, 38px); font-weight: 700; letter-spacing: -0.035em; line-height: 1; }
-.card__info .mono { color: var(--muted); }
-.card__type { text-align: right; }
-
-.work__all { display: flex; flex-direction: column; justify-content: center; gap: 20px; padding-block: 40px; }
-.work__all .mono { color: var(--muted); }
-.work__all strong { transition: color 0.4s; }
-.work__all:hover strong { color: var(--accent); }
-
-@media (min-width: 900px) and (prefers-reduced-motion: no-preference) {
-  .work__pin { height: 100vh; height: 100svh; }
-  .work__track { flex: 1; flex-direction: row; align-items: center; gap: 3.2vw; width: max-content; padding: 0 var(--pad); will-change: transform; }
-  .work__intro { width: 38vw; flex: none; }
-  .card { flex: none; }
-  .card__media { height: min(32vw, 56svh); }
-  .work__all { flex: none; width: 34vw; padding-left: 4vw; }
-}
+.work__caption { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 16px 32px; padding-top: 8px; }
+.work__index { color: var(--accent); font-variant-numeric: tabular-nums; }
+.work__now { display: flex; align-items: baseline; gap: 6px 18px; flex-wrap: wrap; animation: now-in 0.6s var(--ease); }
+.work__now strong { font-size: clamp(26px, 3vw, 46px); font-weight: 700; letter-spacing: -0.04em; line-height: 1; }
+.work__now .mono { color: var(--muted); }
+.work__now:hover strong { color: var(--accent); }
+@keyframes now-in { from { opacity: 0; transform: translateY(14px); } }
 
 @media (max-width: 899px) {
-  .card__info { grid-template-columns: auto 1fr; gap: 6px 14px; }
-  .card__type { grid-column: 2; text-align: left; }
+  .flexrow { height: clamp(300px, 92vw, 520px); }
+  .work__caption { grid-template-columns: auto 1fr; }
+  .work__caption .btn { grid-column: 1 / -1; justify-self: start; }
 }
 
 .archive { padding-block: clamp(100px, 18vh, 200px); }
