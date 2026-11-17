@@ -824,6 +824,7 @@ const FluidGlass = ({
       media.ready = false;
       media.image = null;
       media.canvas = null;
+      media.version = undefined;
       if (!s.src) return;
       if (typeof s.src === 'object' && typeof s.src.getContext === 'function') {
         media.canvas = s.src;
@@ -999,7 +1000,6 @@ const FluidGlass = ({
         const key = `${morph.to}>${morph.pending}`;
         const entry = request(key);
         if (ready(entry)) {
-          request(`${morph.pending}>${morph.pending}`);
           morph.from = morph.to;
           morph.to = morph.pending;
           morph.pending = null;
@@ -1013,9 +1013,16 @@ const FluidGlass = ({
         morph.t = Math.min(1, morph.t + dt / (reduced ? 0.35 : 0.85));
         busy = true;
       }
-      if (s.morphOnClick && s.cycle.length > 1 && !morph.pending) {
-        const index = s.cycle.indexOf(morph.to);
-        request(`${morph.to}>${s.cycle[(index + 1) % s.cycle.length]}`);
+      // Pré-compila o ciclo inteiro em segundo plano, um shader de cada vez, começando pela
+      // forma atual. Assim os cliques seguintes trocam de forma na hora, sem fila de compilação.
+      if (s.morphOnClick && s.cycle.length > 1 && !morph.pending && current) {
+        const start = Math.max(0, s.cycle.indexOf(morph.to));
+        for (let k = 0; k < s.cycle.length; k++) {
+          const a = s.cycle[(start + k) % s.cycle.length];
+          const b = s.cycle[(start + k + 1) % s.cycle.length];
+          const pair = request(`${a}>${b}`);
+          if (!ready(pair)) { busy = true; break; }
+        }
       }
 
       const size = radius();
@@ -1093,7 +1100,9 @@ const FluidGlass = ({
         body.spin += dt * s.spin;
         busy = true;
       }
-      const key = morph.t < 1 ? `${morph.from}>${morph.to}` : `${morph.to}>${morph.to}`;
+      // Terminada a transição, o shader "de→para" com uMorph = 1 já desenha a forma final;
+      // reaproveitá-lo evita compilar um shader parado para cada forma (metade das compilações).
+      const key = `${morph.from}>${morph.to}`;
       const entry = request(key);
       if (ready(entry)) current = entry;
       else busy = true;
@@ -1107,7 +1116,13 @@ const FluidGlass = ({
       body.ripple +=
         ((morph.t < 1 ? 0.05 * s.wobble * Math.sin(Math.PI * morph.t) : 0) - body.ripple) * (1 - Math.exp(-dt / 0.08));
 
-      if (media.canvas && media.ready && media.canvas.width > 0 && media.canvas.height > 0) {
+      // Canvas vivo: se ele expõe `version`, só reenvia quando a versão muda; senão, todo quadro.
+      const version = media.canvas?.version;
+      if (
+        media.canvas && media.ready && media.canvas.width > 0 && media.canvas.height > 0 &&
+        (version === undefined || version !== media.version)
+      ) {
+        media.version = version;
         media.width = media.canvas.width;
         media.height = media.canvas.height;
         gl.bindTexture(gl.TEXTURE_2D, mediaTexture);
@@ -1329,8 +1344,9 @@ const FluidGlass = ({
       }
       if (!moved && near && spot.inside) {
         spring.vstretch -= 3 * s.wobble;
-        if (s.morphOnClick && s.cycle.length > 1) {
-          const index = s.cycle.indexOf(morph.pending || morph.to);
+        // Um clique por vez: se a próxima forma ainda está carregando, o clique não pula outra.
+        if (s.morphOnClick && s.cycle.length > 1 && !morph.pending) {
+          const index = s.cycle.indexOf(morph.to);
           morph.pending = s.cycle[(index + 1) % s.cycle.length];
         }
       }

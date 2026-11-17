@@ -8,9 +8,16 @@ const FluidGlass = lazy(() => import('./FluidGlass.jsx'))
 
 export default function HeroGlass({ ready }) {
   const host = useRef(null)
-  const mirror = useMemo(() => document.createElement('canvas'), [])
+  const mirror = useMemo(() => Object.assign(document.createElement('canvas'), { version: 0 }), [])
   const [on, setOn] = useState(false)
   const mobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 899px)').matches
+  const sizeFor = () => Math.round(Math.min(288, Math.max(120, window.innerWidth * 0.17)))
+  const [size, setSize] = useState(sizeFor)
+  useEffect(() => {
+    const onResize = () => setSize(sizeFor())
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
 
   // Só entra depois da animação de entrada do hero (o nome é "desenhado" até ~2,5 s).
   useEffect(() => {
@@ -32,6 +39,7 @@ export default function HeroGlass({ ready }) {
       s = Math.min(window.devicePixelRatio || 1, mobile ? 1.5 : 2)
       mirror.width = Math.round(el.clientWidth * s)
       mirror.height = Math.round(el.clientHeight * s)
+      signature = '' // canvas redimensionado = apagado; força redesenhar
     }
 
     // Posição de um elemento dentro do quadro, sem a escala do zoom do scroll.
@@ -40,9 +48,25 @@ export default function HeroGlass({ ready }) {
       return { x: (r.left - base.left) * k, y: (r.top - base.top) * k, w: r.width * k, h: r.height * k }
     }
 
-    const draw = () => {
+    // Só redesenha (e o vidro só reenvia a textura) quando algo muda: tamanho, foto visível
+    // (preto e branco/colorida) ou fontes carregadas. O resto do tempo o espelho fica parado.
+    let signature = ''
+    const tickMirror = () => {
       raf = 0
       if (!visible) return
+      const img = [...frame.querySelectorAll('.hero__photo img')].find(
+        (i) => i.complete && i.naturalWidth && getComputedStyle(i).visibility !== 'hidden'
+      )
+      const next = `${el.clientWidth}x${el.clientHeight}|${img?.currentSrc}|${document.fonts?.status}`
+      if (next !== signature) {
+        signature = next
+        draw(img)
+        mirror.version = (mirror.version || 0) + 1
+      }
+      raf = requestAnimationFrame(tickMirror)
+    }
+
+    const draw = (img) => {
       const base = frame.getBoundingClientRect()
       const k = frame.clientWidth / Math.max(1, base.width)
       const bg = getComputedStyle(frame)
@@ -71,9 +95,6 @@ export default function HeroGlass({ ready }) {
 
       // Retrato: a versão que estiver visível (preto e branco ou colorida).
       const portrait = frame.querySelector('.hero__portrait')
-      const img = [...frame.querySelectorAll('.hero__photo img')].find(
-        (i) => i.complete && i.naturalWidth && getComputedStyle(i).visibility !== 'hidden'
-      )
       if (portrait && img) {
         const b = box(portrait, base, k)
         const ratio = img.naturalWidth / img.naturalHeight
@@ -85,12 +106,11 @@ export default function HeroGlass({ ready }) {
         }
         ctx.drawImage(img, b.x + (b.w - w) / 2, b.y + b.h - h, w, h)
       }
-      raf = requestAnimationFrame(draw)
     }
 
     const io = new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting
-      if (visible && !raf) raf = requestAnimationFrame(draw)
+      if (visible && !raf) raf = requestAnimationFrame(tickMirror)
     })
     io.observe(el)
     const ro = new ResizeObserver(resize)
@@ -113,7 +133,8 @@ export default function HeroGlass({ ready }) {
             src={mirror}
             shape="torus"
             interaction={mobile ? 'drag' : 'follow'}
-            size={mobile ? 150 : 240}
+            // Proporcional à largura: ~120 px no celular, ~130–175 no tablet, 288 no desktop grande.
+            size={size}
             position={mobile ? [0.7, 0.6] : [0.72, 0.4]}
             refraction={1}
             dispersion={0.35}
@@ -129,6 +150,7 @@ export default function HeroGlass({ ready }) {
             idle
             shapes={['torus', 'prism', 'diamond', 'cube', 'lens']}
             morphOnClick
+            onShapeChange={(name) => host.current && (host.current.dataset.shape = name)}
             intro
           />
         </Suspense>
