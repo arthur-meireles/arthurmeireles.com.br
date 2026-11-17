@@ -1,21 +1,18 @@
-import { useRef, useState } from 'react'
+import { useRef } from 'react'
 import { Chars } from '../components/Split.jsx'
 import Float from '../components/Float.jsx'
-import GlassScene from '../components/GlassScene.jsx'
+import Lightfall from '../components/Lightfall.jsx'
 import { floatOnScroll, gsap, MOTION_OK, scrollToTarget, useGSAP } from '../lib/motion.js'
 import { site } from '../content/site.js'
 
-// Rodapé + contato. Fica em todas as páginas.
+// Rodapé + contato. Fica em todas as páginas. A chuva de luz cobre a seção inteira.
 export default function Contact() {
   const root = useRef(null)
-  // 'scene': o nome é desenhado dentro da cena de vidro. 'fallback': mostra o nome em HTML.
-  const [mode, setMode] = useState(null)
 
   useGSAP(
     () => {
       gsap.matchMedia().add(MOTION_OK, () => {
         floatOnScroll(root.current)
-        if (mode !== 'fallback') return
         gsap.from('.contact__name .char', {
           yPercent: 110,
           stagger: 0.03,
@@ -25,11 +22,12 @@ export default function Contact() {
         })
       })
     },
-    { scope: root, dependencies: [mode] }
+    { scope: root }
   )
 
   return (
     <footer className="contact" id="contato" ref={root}>
+      <Lightfall className="contact__sky" alpha={0.75} />
       <Float name="layers" speed={0.6} />
       <div className="wrap">
         <p className="eyebrow mono">Contato</p>
@@ -62,12 +60,9 @@ export default function Contact() {
         </div>
       </div>
 
-      <GlassScene onMode={setMode} />
-      {mode === 'fallback' && (
-        <p className="contact__name" aria-hidden="true">
-          <Chars text="ARTHUR MEIRELES" />
-        </p>
-      )}
+      <p className="contact__name" aria-hidden="true">
+        <Chars text="Arthur Meireles." />
+      </p>
     </footer>
   )
 }

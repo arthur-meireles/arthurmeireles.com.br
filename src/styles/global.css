@@ -242,23 +242,21 @@ h1, h2, h3, p, figure, blockquote, dl, dd { margin: 0; }
 .contact__foot button { font: inherit; text-transform: inherit; letter-spacing: inherit; }
 .contact__socials { display: flex; gap: 28px; }
 .contact__name {
-  margin-top: clamp(30px, 6vh, 70px);
-  font-size: 11.1vw;
-  font-weight: 800;
-  line-height: 0.78;
-  letter-spacing: -0.05em;
+  position: relative;
+  z-index: 1;
+  margin-top: clamp(60px, 14vh, 180px);
+  padding: 0.04em 0 0.14em;
+  font-size: 13.6vw;
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.045em;
   white-space: nowrap;
   text-align: center;
   overflow: hidden;
-  padding-top: 0.04em;
   user-select: none;
-  /* Contorno como no hero (usado só quando o WebGL não está disponível). */
-  filter: url(#text-outline);
 }
-/* O nome é desenhado no canvas, então o rodapé reserva a altura dele embaixo. */
-/* Palco do Fluid Glass no fim do rodapé (mesma composição do demo "Look closer."). */
-.glassstage { position: relative; height: clamp(340px, 62vh, 640px); margin-top: clamp(20px, 4vh, 48px); }
-@media (max-width: 899px) { .glassstage { height: min(70svh, 520px); } }
+/* Chuva de luz cobrindo o rodapé inteiro, atrás de tudo. */
+.contact__sky { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
 
 @media (max-width: 699px) {
   .contact__links { grid-template-columns: 1fr; }

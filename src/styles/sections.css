@@ -94,6 +94,8 @@
   line-height: 1.5;
 }
 
+/* Fluid Glass por cima do nome e do retrato; não bloqueia o hover do retrato (os eventos vêm da window). */
+.hero__glass { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
 .hero__pointer { position: absolute; z-index: 4; left: 58%; top: 56%; color: var(--accent); display: flex; align-items: flex-start; pointer-events: none; }
 .hero__pointer span { margin: 14px 0 0 -2px; background: var(--accent); color: #fff; padding: 5px 10px; border-radius: 3px 12px 12px 12px; }
 

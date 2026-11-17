@@ -2,6 +2,7 @@ import { useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { Chars } from '../components/Split.jsx'
 import GlitchPortrait from '../components/GlitchPortrait.jsx'
+import HeroGlass from '../components/HeroGlass.jsx'
 import { gsap, MOTION_OK, useGSAP, useReady } from '../lib/motion.js'
 import { projects } from '../content/projects.js'
 import { site } from '../content/site.js'
@@ -112,6 +113,8 @@ export default function Hero() {
               <b className="mono">Nome — Fill</b>
             </div>
           </div>
+
+          <HeroGlass ready={ready} />
 
           <div className="hero__pointer">
             <svg viewBox="0 0 20 20" width="20" height="20"><path d="M2 2l5.5 15 2.4-6.2L16 8.5z" fill="currentColor" stroke="#fff" strokeWidth="1.2" /></svg>

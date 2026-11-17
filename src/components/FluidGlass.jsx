@@ -149,6 +149,7 @@ uniform float uPass;
 uniform sampler2D uShadowMap;
 uniform vec4 uShadowBox;
 uniform vec2 uShadowSize;
+uniform float uLensOnly;
 out vec4 fragColor;
 
 float shapeA(vec3 p) ${SDF[a]}
@@ -456,7 +457,8 @@ void main() {
   vec2 wx = dFdx(w);
   vec2 wy = dFdy(w);
 
-  vec4 background = shade(content(w, wx, wy), lighting(w, 1.0));
+  // lensOnly: fora do vidro só a sombra (o resto fica transparente e a página aparece por baixo).
+  vec4 background = shade(uLensOnly > 0.5 ? vec4(0.0) : content(w, wx, wy), lighting(w, 1.0));
   vec4 tone = tr.mode > 0.5 ? content(uCenter.xy, vec2(uBound * 1.4, 0.0), vec2(0.0, uBound * 1.4)) : vec4(0.0);
   vec4 color = shadeTrace(tr, rd, background, tone, w, tx, ty, rx, ry);
   ${supersample ? SUPERSAMPLE : ''}
@@ -577,6 +579,7 @@ const FluidGlass = ({
   onShapeChange,
   position = [0.5, 0.5],
   intro = true,
+  lensOnly = false,
   maxDevicePixelRatio = 2,
   className = '',
   style,
@@ -618,6 +621,7 @@ const FluidGlass = ({
     onShapeChange,
     position: [clamp(position?.[0] ?? 0.5, 0, 1), clamp(position?.[1] ?? 0.5, 0, 1)],
     intro,
+    lensOnly: Boolean(lensOnly),
     maxRatio: clamp(maxDevicePixelRatio, 0.5, 3)
   };
   const settingsRef = useRef(settings);
@@ -870,9 +874,9 @@ const FluidGlass = ({
     let resizePending = false;
     const applyResize = () => {
       const s = settingsRef.current;
-      const rect = container.getBoundingClientRect();
-      const cssWidth = Math.max(1, rect.width);
-      const cssHeight = Math.max(1, rect.height);
+      // Tamanho de layout (sem transform): no hero o quadro é escalado pelo scroll.
+      const cssWidth = Math.max(1, container.clientWidth);
+      const cssHeight = Math.max(1, container.clientHeight);
       const ratio = Math.min(
         window.devicePixelRatio || 1,
         s.maxRatio,
@@ -937,6 +941,7 @@ const FluidGlass = ({
       gl.uniform1f(u.uTextOn, textState.ready ? 1 : 0);
       const bg = s.background;
       gl.uniform4f(u.uBackground, bg[0] * bg[3], bg[1] * bg[3], bg[2] * bg[3], bg[3]);
+      if (u.uLensOnly) gl.uniform1f(u.uLensOnly, s.lensOnly ? 1 : 0);
     };
 
     const settle = () => {
@@ -1124,7 +1129,11 @@ const FluidGlass = ({
 
       if (!current) {
         const fallback = request('content');
-        if (ready(fallback)) {
+        if (s.lensOnly) {
+          gl.viewport(0, 0, canvas.width, canvas.height);
+          gl.clearColor(0, 0, 0, 0);
+          gl.clear(gl.COLOR_BUFFER_BIT);
+        } else if (ready(fallback)) {
           gl.viewport(0, 0, canvas.width, canvas.height);
           gl.clearColor(0, 0, 0, 0);
           gl.clear(gl.COLOR_BUFFER_BIT);
@@ -1264,9 +1273,10 @@ const FluidGlass = ({
 
     const locate = event => {
       const rect = container.getBoundingClientRect();
+      const k = container.clientWidth / Math.max(1, rect.width); // desfaz a escala do pai
       return {
-        x: event.clientX - rect.left,
-        y: event.clientY - rect.top,
+        x: (event.clientX - rect.left) * k,
+        y: (event.clientY - rect.top) * k,
         inside:
           event.clientX >= rect.left &&
           event.clientX <= rect.right &&
