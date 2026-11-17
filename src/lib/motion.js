@@ -40,11 +40,17 @@ export function scrollToTarget(target, immediate = false) {
   else document.querySelector(target)?.scrollIntoView()
 }
 
-// Objetos 3D (<Float />): sobem e giram devagar enquanto atravessam a tela.
+// Objetos 3D (<Float />): sobem e giram devagar enquanto atravessam a tela e,
+// por dentro, flutuam em loop leve (sobe/desce e balança um pouco), mesmo com a página parada.
 export function floatOnScroll(scope) {
   gsap.utils.toArray('[data-float]', scope).forEach((el, i) => {
     const speed = Number(el.dataset.float) || 1
     const dir = i % 2 ? -1 : 1
+    const img = el.querySelector('img')
+    if (img) {
+      gsap.to(img, { y: -18, duration: 3.2 + i * 0.4, ease: 'sine.inOut', yoyo: true, repeat: -1 })
+      gsap.to(img, { rotation: 4 * dir, x: 6 * dir, duration: 4.6 + i * 0.5, ease: 'sine.inOut', yoyo: true, repeat: -1 })
+    }
     gsap.fromTo(
       el,
       { y: 140 * speed, rotation: -14 * dir },

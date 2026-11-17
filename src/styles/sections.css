@@ -433,15 +433,17 @@
 }
 
 /* ================= OBJETOS 3D FLUTUANTES ================= */
-.float { position: absolute; z-index: 0; height: auto; pointer-events: none; user-select: none; mix-blend-mode: screen; will-change: transform; }
-.is-light .float { display: none; } /* o blend só funciona sobre fundo escuro */
+/* Transparência real: o objeto pode passar por cima da borda entre seções (claras ou escuras). */
+.float { position: absolute; z-index: 0; display: block; pointer-events: none; user-select: none; will-change: transform; }
+.float img { display: block; width: 100%; height: auto; will-change: transform; }
 .manifesto, .quotes, .pagehead { position: relative; }
 .manifesto > .wrap, .contact > .wrap { position: relative; z-index: 1; }
 .quotes > :not(.float), .pagehead > :not(.float) { position: relative; z-index: 1; }
 
 .float--cursor { width: clamp(180px, 24vw, 420px); right: 3vw; top: clamp(60px, 12vh, 140px); }
 .float--frame { width: clamp(160px, 19vw, 360px); right: -1vw; top: -9vh; }
-.float--layers { width: clamp(180px, 25vw, 440px); right: 5vw; top: clamp(40px, 9vh, 120px); }
+/* No rodapé o objeto fica em cima da borda com a seção anterior, metade em cada uma. */
+.float--layers { width: clamp(180px, 25vw, 440px); right: 5vw; top: clamp(-160px, -12vh, -70px); }
 .float--pen { width: clamp(150px, 19vw, 340px); right: 6vw; top: clamp(90px, 15vh, 170px); }
 
 @media (max-width: 899px) {

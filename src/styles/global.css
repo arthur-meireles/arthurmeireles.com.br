@@ -211,7 +211,7 @@ h1, h2, h3, p, figure, blockquote, dl, dd { margin: 0; }
 .pagehead__extra { margin-top: 40px; }
 
 /* ---------- Contato / rodapé ---------- */
-.contact { position: relative; background: var(--canvas); padding-top: clamp(100px, 18vh, 200px); overflow: hidden; }
+.contact { position: relative; background: var(--canvas); padding-top: clamp(100px, 18vh, 200px); overflow-x: clip; /* em y fica livre: o objeto 3D passa por cima da seção anterior */ }
 .contact__lead { margin-top: 32px; }
 .contact__links { display: grid; grid-template-columns: 1fr 1fr; gap: 0 var(--pad); margin-top: clamp(48px, 9vh, 110px); }
 .biglink {
