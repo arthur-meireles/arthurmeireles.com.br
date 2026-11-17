@@ -73,13 +73,6 @@ export default function Hero() {
 
   return (
     <section className="hero" ref={root}>
-      {/* Filtro do contorno do nome: letra cheia menos a mesma letra "encolhida" = só a borda. */}
-      <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden="true">
-        <filter id="text-outline" x="-2%" y="-10%" width="104%" height="120%" colorInterpolationFilters="sRGB">
-          <feMorphology in="SourceAlpha" operator="erode" radius="1.4" result="miolo" />
-          <feComposite in="SourceGraphic" in2="miolo" operator="out" />
-        </filter>
-      </svg>
       <div className="hero__boards" aria-hidden="true">
         {boards.map((b) => (
           <Link

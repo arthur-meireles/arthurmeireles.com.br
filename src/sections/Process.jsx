@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { DESKTOP, gsap, MOTION_OK, ScrollTrigger, useGSAP } from '../lib/motion.js'
 import { process } from '../content/site.js'
+import { tick } from '../lib/haptics.js'
 
 const notes = [
   { t: 'Quem usa?', c: 'y', x: 8, y: 10, r: -6 },
@@ -72,20 +73,29 @@ export default function Process() {
   useGSAP(
     () => {
       const mm = gsap.matchMedia()
-      mm.add(`${MOTION_OK} and ${DESKTOP}`, () => {
+      // Desktop e celular: a seção fica fixa e a rolagem passa pelas 4 etapas.
+      const pin = (end) => {
         ScrollTrigger.create({
           trigger: '.process__pin',
           start: 'top top',
-          end: '+=300%',
+          end,
           pin: true,
-          onUpdate: (self) => setStep(Math.min(process.length - 1, Math.floor(self.progress * process.length))),
+          onUpdate: (self) => {
+            const next = Math.min(process.length - 1, Math.floor(self.progress * process.length))
+            setStep((prev) => {
+              if (prev !== next && window.innerWidth < 900) tick()
+              return next
+            })
+          },
         })
         gsap.to('.process__meter i', {
           scaleX: 1,
           ease: 'none',
-          scrollTrigger: { trigger: '.process__pin', start: 'top top', end: '+=300%', scrub: true },
+          scrollTrigger: { trigger: '.process__pin', start: 'top top', end, scrub: true },
         })
-      })
+      }
+      mm.add(`${MOTION_OK} and ${DESKTOP}`, () => pin('+=300%'))
+      mm.add(`${MOTION_OK} and (max-width: 899px)`, () => pin('+=240%'))
     },
     { scope: root }
   )

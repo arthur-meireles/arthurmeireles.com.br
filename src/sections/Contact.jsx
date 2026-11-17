@@ -1,18 +1,21 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { Chars } from '../components/Split.jsx'
 import Float from '../components/Float.jsx'
-import WhatsAppForm from '../components/WhatsAppForm.jsx'
+import GlassScene from '../components/GlassScene.jsx'
 import { floatOnScroll, gsap, MOTION_OK, scrollToTarget, useGSAP } from '../lib/motion.js'
 import { site } from '../content/site.js'
 
 // Rodapé + contato. Fica em todas as páginas.
 export default function Contact() {
   const root = useRef(null)
+  // 'scene': o nome é desenhado dentro da cena de vidro. 'fallback': mostra o nome em HTML.
+  const [mode, setMode] = useState(null)
 
   useGSAP(
     () => {
       gsap.matchMedia().add(MOTION_OK, () => {
         floatOnScroll(root.current)
+        if (mode !== 'fallback') return
         gsap.from('.contact__name .char', {
           yPercent: 110,
           stagger: 0.03,
@@ -22,7 +25,7 @@ export default function Contact() {
         })
       })
     },
-    { scope: root }
+    { scope: root, dependencies: [mode] }
   )
 
   return (
@@ -33,9 +36,7 @@ export default function Contact() {
         <h2 className="display contact__title">
           Vamos criar algo<br />que <em className="serif">funciona?</em>
         </h2>
-        <p className="lead contact__lead">Conte o que você precisa e a conversa já começa no WhatsApp. Respondo rápido, prometo.</p>
-
-        <WhatsAppForm />
+        <p className="lead contact__lead">Me chama no WhatsApp ou por e-mail e conta o que você precisa. Respondo rápido, prometo.</p>
 
         <div className="contact__links">
           <a href={site.whatsapp.href} target="_blank" rel="noreferrer" className="biglink" data-cursor="Chamar">
@@ -61,9 +62,12 @@ export default function Contact() {
         </div>
       </div>
 
-      <p className="contact__name" aria-hidden="true">
-        <Chars text="ARTHUR MEIRELES" />
-      </p>
+      <GlassScene onMode={setMode} />
+      {mode === 'fallback' && (
+        <p className="contact__name" aria-hidden="true">
+          <Chars text="ARTHUR MEIRELES" />
+        </p>
+      )}
     </footer>
   )
 }

@@ -272,8 +272,20 @@
 .state--final img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
 
 @media (max-width: 899px) {
-  .process__grid { grid-template-columns: 1fr; }
-  .artboard { order: -1; }
+  /* Celular: tudo cabe numa tela só, porque a seção fica fixa enquanto as etapas passam. */
+  .process__pin { align-items: flex-start; padding: 72px 0 20px; }
+  .process__grid { grid-template-columns: 1fr; gap: 16px; align-items: start; }
+  .artboard { order: -1; border-radius: 12px; }
+  .artboard__bar { padding: 9px 14px; font-size: 10px; }
+  .artboard__stage { aspect-ratio: 16 / 10; }
+  .process .eyebrow { margin-bottom: 6px; }
+  .process .h2 { font-size: clamp(26px, 8vw, 34px); }
+  .process__meter { margin: 14px 0 0; }
+  .step button { padding: 11px 0; }
+  .step strong { font-size: 22px; }
+  .step__body .tags { margin: 10px 0 14px; }
+  .step__body p { font-size: 14px; line-height: 1.45; }
+  .note { font-size: 11px; }
 }
 
 /* ================= SERVIÇOS ================= */
@@ -451,3 +463,26 @@
 .awheel__wheel a.is-active { color: var(--fg); }
 .awheel__marker { position: absolute; left: 0; top: 50%; width: 10px; height: 10px; margin-top: -5px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 6px rgba(13, 153, 255, 0.18); }
 .awheel__hint { color: var(--muted); text-align: center; flex: none; }
+
+/* ================= DESTAQUES NO CELULAR: PILHA DE CARTAS ================= */
+.cswap { position: relative; height: clamp(360px, 112vw, 560px); margin-top: 12px; perspective: 900px; overflow: hidden; touch-action: pan-y; user-select: none; }
+.cswap__card {
+  position: absolute;
+  left: 42%;
+  top: 62%;
+  width: 72vw;
+  max-width: 420px;
+  border-radius: 14px;
+  background: #17171a;
+  border: 1px solid rgba(239, 236, 230, 0.12);
+  box-shadow: 0 30px 60px -24px rgba(0, 0, 0, 0.85);
+  overflow: hidden;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+.cswap__bar { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid rgba(239, 236, 230, 0.08); }
+.cswap__bar .mono { color: var(--accent); }
+.cswap__bar strong { font-size: 15px; font-weight: 600; letter-spacing: -0.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cswap__dot { margin-left: auto; width: 7px; height: 7px; border-radius: 50%; background: rgba(239, 236, 230, 0.25); flex: none; }
+.cswap__card img { display: block; width: 100%; height: auto; aspect-ratio: 808 / 632; object-fit: cover; pointer-events: none; }
+.cswap__hint { position: absolute; left: 0; right: 0; bottom: 6px; text-align: center; color: var(--muted); }

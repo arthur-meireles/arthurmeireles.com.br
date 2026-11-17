@@ -252,7 +252,13 @@ h1, h2, h3, p, figure, blockquote, dl, dd { margin: 0; }
   overflow: hidden;
   padding-top: 0.04em;
   user-select: none;
+  /* Contorno como no hero (usado só quando o WebGL não está disponível). */
+  filter: url(#text-outline);
 }
+/* O nome é desenhado no canvas, então o rodapé reserva a altura dele embaixo. */
+/* Palco do Fluid Glass no fim do rodapé (mesma composição do demo "Look closer."). */
+.glassstage { position: relative; height: clamp(340px, 62vh, 640px); margin-top: clamp(20px, 4vh, 48px); }
+@media (max-width: 899px) { .glassstage { height: min(70svh, 520px); } }
 
 @media (max-width: 699px) {
   .contact__links { grid-template-columns: 1fr; }
@@ -261,41 +267,6 @@ h1, h2, h3, p, figure, blockquote, dl, dd { margin: 0; }
 /* ---------- 404 ---------- */
 .notfound { min-height: 90svh; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 32px; }
 .notfound .eyebrow { margin: 0; }
-
-/* ---------- Formulário que abre o WhatsApp ---------- */
-.waform { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 28px var(--pad); max-width: 1100px; margin-top: clamp(40px, 7vh, 80px); }
-.waform__field { display: grid; gap: 12px; border: 0; padding: 0; margin: 0; min-width: 0; align-content: start; }
-fieldset.waform__field { grid-row: span 2; }
-.waform label.mono, .waform legend { color: var(--muted); padding: 0; }
-.waform legend { margin-bottom: 12px; }
-.waform input:not([type='radio']), .waform textarea {
-  width: 100%;
-  background: transparent;
-  border: 0;
-  border-bottom: 1px solid var(--line);
-  padding: 10px 0 14px;
-  color: var(--fg);
-  font: inherit;
-  font-size: clamp(18px, 1.5vw, 22px);
-  resize: vertical;
-  transition: border-color 0.3s;
-}
-.waform input::placeholder, .waform textarea::placeholder { color: rgba(239, 236, 230, 0.32); }
-.waform input:focus, .waform textarea:focus { outline: none; border-color: var(--accent); }
-.waform__chips { display: flex; flex-wrap: wrap; gap: 10px; }
-.chip { position: relative; border: 1px solid var(--line); border-radius: 99px; padding: 10px 16px; cursor: pointer; transition: background 0.3s, color 0.3s, border-color 0.3s; }
-.chip input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
-.chip:hover { border-color: var(--fg); }
-.chip.is-on { background: var(--fg); color: var(--bg); border-color: var(--fg); }
-.chip:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 3px; }
-.waform__send { justify-self: start; align-self: end; background: var(--fg); color: var(--bg); }
-.waform__send:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
-.waform__note { grid-column: 1 / -1; color: var(--muted); margin-top: -8px; }
-
-@media (max-width: 699px) {
-  .waform { grid-template-columns: 1fr; }
-  fieldset.waform__field { grid-row: auto; }
-}
 
 /* ---------- Nav que some ao descer e volta ao subir ---------- */
 .nav { transition: transform 0.5s var(--ease); }

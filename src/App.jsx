@@ -43,6 +43,13 @@ export default function App() {
 
   return (
     <ReadyContext.Provider value={ready}>
+      {/* Filtro do contorno dos nomes (hero e rodapé): letra cheia menos a mesma letra "encolhida" = só a borda. */}
+      <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden="true">
+        <filter id="text-outline" x="-2%" y="-10%" width="104%" height="120%" colorInterpolationFilters="sRGB">
+          <feMorphology in="SourceAlpha" operator="erode" radius="1.4" result="miolo" />
+          <feComposite in="SourceGraphic" in2="miolo" operator="out" />
+        </filter>
+      </svg>
       <Preloader onDone={() => setReady(true)} />
       <ScrollManager />
       <Cursor />

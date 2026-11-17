@@ -1,25 +1,29 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import ArchiveWheel from '../components/ArchiveWheel.jsx'
 import FlexRow from '../components/FlexRow.jsx'
+import CardSwap from '../components/CardSwap.jsx'
 import { Link } from 'react-router-dom'
 import { gsap, MOTION_OK, revealOnScroll, useGSAP } from '../lib/motion.js'
 import { featured, projects } from '../content/projects.js'
 
 // No celular (e com movimento liberado) o arquivo vira a roda de opções; no desktop fica a lista com hover.
 const WHEEL_QUERY = '(max-width: 899px) and (prefers-reduced-motion: no-preference)'
-function useWheel() {
-  const [on, setOn] = useState(() => typeof window !== 'undefined' && window.matchMedia(WHEEL_QUERY).matches)
+function useMedia(query) {
+  const [on, setOn] = useState(() => typeof window !== 'undefined' && window.matchMedia(query).matches)
   useEffect(() => {
-    const mq = window.matchMedia(WHEEL_QUERY)
+    const mq = window.matchMedia(query)
     const update = () => setOn(mq.matches)
     mq.addEventListener('change', update)
     return () => mq.removeEventListener('change', update)
-  }, [])
+  }, [query])
   return on
 }
+const useWheel = () => useMedia(WHEEL_QUERY)
 
 export default function Work() {
   const wheel = useWheel()
+  // No celular os destaques viram a pilha de cartas; no desktop, a fileira de vidro líquido.
+  const mobile = useMedia('(max-width: 899px)')
   const root = useRef(null)
   const preview = useRef(null)
   const [hovered, setHovered] = useState(null)
@@ -58,10 +62,10 @@ export default function Work() {
         <h2 className="display" data-reveal>
           Trabalho que <em className="serif">entrega.</em>
         </h2>
-        <p data-reveal>De landing pages a ERPs inteiros. Arraste, role ou clique numa capa para ver o projeto completo.</p>
+        <p data-reveal>De landing pages a ERPs inteiros. {mobile ? 'Deslize as cartas e toque para ver o projeto completo.' : 'Arraste, role ou clique numa capa para ver o projeto completo.'}</p>
       </div>
 
-      <FlexRow projects={featured} onActive={onActive} />
+      {mobile ? <CardSwap projects={featured} onActive={onActive} /> : <FlexRow projects={featured} onActive={onActive} />}
 
       <div className="work__caption wrap">
         <p className="mono work__index">
