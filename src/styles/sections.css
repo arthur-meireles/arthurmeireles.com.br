@@ -251,8 +251,13 @@
 .note:nth-child(4) { transition-delay: 0.15s; }
 .note:nth-child(5) { transition-delay: 0.2s; }
 
-.state--flow { display: grid; place-items: center; padding: 8%; }
-.state--flow svg { width: 100%; height: 100%; }
+.state--flow { display: grid; place-items: center; padding: 4% 3%; }
+.state--flow svg { width: 100%; height: 100%; color: #0a0a0b; }
+/* As linhas se desenham e os blocos entram em sequência quando a etapa "Definir" aparece. */
+.flow__line { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 0.5s var(--ease); transition-delay: calc(0.15s + var(--i) * 0.05s); }
+.flow__node, .flow__label { opacity: 0; transition: opacity 0.4s; transition-delay: calc(var(--i, 6) * 0.05s); }
+.artboard[data-step='1'] .flow__line { stroke-dashoffset: 0; }
+.artboard[data-step='1'] .flow__node, .artboard[data-step='1'] .flow__label { opacity: 1; }
 
 .state--wire { padding: 7%; }
 .wire { height: 100%; display: grid; grid-template-rows: auto 1fr auto; gap: 6%; border: 1.5px solid #0a0a0b; border-radius: 8px; padding: 4%; background: #fff; }
