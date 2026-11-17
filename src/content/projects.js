@@ -182,6 +182,9 @@ export const projects = list.map((p, i) => ({
   ...p,
   index: String(i + 1).padStart(2, '0'),
   thumb: `/work/${p.slug}/thumb.webp`,
+  thumbSm: `/work/${p.slug}/thumb-sm.webp`,
+  // srcset para o navegador escolher 640 ou 1200 px conforme o tamanho na tela.
+  thumbSet: `/work/${p.slug}/thumb-sm.webp 640w, /work/${p.slug}/thumb.webp 1200w`,
   images: manifest[p.slug] ?? [],
 }))
 

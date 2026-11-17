@@ -6,7 +6,7 @@ import sharp from 'sharp'
 import opentype from 'opentype.js'
 
 const root = path.resolve(import.meta.dirname, '..')
-const SITE_URL = 'https://arthurmeireles.cc' // troque aqui e no index.html se o domínio for outro
+const SITE_URL = 'https://arthurmeireles.com.br' // troque aqui e no index.html se o domínio for outro
 
 // ---------- Imagem ----------
 const W = 1200

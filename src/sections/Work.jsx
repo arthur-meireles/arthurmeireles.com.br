@@ -1,9 +1,24 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import ArchiveWheel from '../components/ArchiveWheel.jsx'
 import { Link } from 'react-router-dom'
 import { DESKTOP, gsap, MOTION_OK, revealOnScroll, ScrollTrigger, useGSAP } from '../lib/motion.js'
 import { featured, projects } from '../content/projects.js'
 
+// No celular (e com movimento liberado) o arquivo vira a roda de opções; no desktop fica a lista com hover.
+const WHEEL_QUERY = '(max-width: 899px) and (prefers-reduced-motion: no-preference)'
+function useWheel() {
+  const [on, setOn] = useState(() => typeof window !== 'undefined' && window.matchMedia(WHEEL_QUERY).matches)
+  useEffect(() => {
+    const mq = window.matchMedia(WHEEL_QUERY)
+    const update = () => setOn(mq.matches)
+    mq.addEventListener('change', update)
+    return () => mq.removeEventListener('change', update)
+  }, [])
+  return on
+}
+
 export default function Work() {
+  const wheel = useWheel()
   const root = useRef(null)
   const preview = useRef(null)
   const [hovered, setHovered] = useState(null)
@@ -90,7 +105,7 @@ export default function Work() {
           {featured.map((p, i) => (
             <Link to={`/projetos/${p.slug}`} className="card" key={p.slug} data-cursor="Ver projeto">
               <div className="card__media">
-                <img src={p.thumb} alt={`Tela do projeto ${p.title}`} width="1200" height="900" loading="lazy" decoding="async" />
+                <img src={p.thumb} srcSet={p.thumbSet} sizes="(min-width: 900px) 46vw, 92vw" alt={`Tela do projeto ${p.title}`} width="1200" height="939" loading="lazy" decoding="async" />
               </div>
               <div className="card__info">
                 <span className="mono">{String(i + 1).padStart(2, '0')}</span>
@@ -107,6 +122,11 @@ export default function Work() {
         </div>
       </div>
 
+      {wheel ? (
+        <div className="archive archive--wheel">
+          <ArchiveWheel projects={projects} />
+        </div>
+      ) : (
       <div className="archive wrap">
         <header className="archive__head">
           <h2 className="h2" data-reveal>Arquivo completo</h2>
@@ -125,9 +145,10 @@ export default function Work() {
           ))}
         </ul>
       </div>
+      )}
 
       <div className={`preview ${hovered ? 'is-on' : ''}`} ref={preview} aria-hidden="true">
-        {hovered && <img src={hovered.thumb} alt="" key={hovered.slug} />}
+        {hovered && <img src={hovered.thumbSm} alt="" key={hovered.slug} />}
       </div>
     </section>
   )

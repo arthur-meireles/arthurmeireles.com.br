@@ -13,7 +13,7 @@ export default function Projects() {
         {projects.map((p) => (
           <Link to={`/projetos/${p.slug}`} className="projcard" key={p.slug} data-reveal data-cursor="Ver projeto">
             <div className="projcard__media">
-              <img src={p.thumb} alt={`Tela do projeto ${p.title}`} width="1200" height="900" loading="lazy" decoding="async" />
+              <img src={p.thumb} srcSet={p.thumbSet} sizes="(min-width: 900px) 46vw, 92vw" alt={`Tela do projeto ${p.title}`} width="1200" height="939" loading="lazy" decoding="async" />
             </div>
             <div className="projcard__info">
               <h2>{p.title}</h2>

@@ -91,7 +91,7 @@ export default function Hero() {
             data-cursor="Ver projeto"
           >
             <span className="mono">{b.title}</span>
-            <img src={b.thumb} alt="" loading="eager" decoding="async" />
+            <img src={b.thumbSm} alt="" loading="lazy" fetchPriority="low" decoding="async" />
           </Link>
         ))}
       </div>

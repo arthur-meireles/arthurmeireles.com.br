@@ -58,7 +58,7 @@ function Artboard({ step }) {
         </div>
 
         <div className="state state--final">
-          <img src="/work/gb-agritech/thumb.webp" alt="Interface final do projeto GB Agritech" loading="lazy" />
+          <img src="/work/gb-agritech/thumb-sm.webp" srcSet="/work/gb-agritech/thumb-sm.webp 640w, /work/gb-agritech/thumb.webp 1200w" sizes="(min-width: 900px) 50vw, 92vw" alt="Interface final do projeto GB Agritech" loading="lazy" />
         </div>
       </div>
     </div>

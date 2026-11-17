@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { gsap, reducedMotion } from '../lib/motion.js'
 
 // Retrato do hero em 2 versões (preto e branco / colorida).
@@ -6,6 +6,11 @@ import { gsap, reducedMotion } from '../lib/motion.js'
 // - Hover (ou toque): "glitcha" para a versão colorida.
 const POSES = ['a']
 const src = (pose, version) => `/img/arthur-${pose}-${version}.webp`
+// Três larguras: o navegador escolhe pela altura do retrato na tela e pela densidade de pixels.
+const srcSet = (pose, version) =>
+  `/img/arthur-${pose}-${version}-800.webp 800w, /img/arthur-${pose}-${version}-1200.webp 1200w, /img/arthur-${pose}-${version}.webp 1600w`
+// O retrato ocupa ~96% da altura da tela no desktop e ~80% no celular, com proporção 1600:1805.
+const SIZES = '(min-width: 900px) 85vh, 71vh'
 const CYCLE_MS = 6000
 
 const rand = gsap.utils.random
@@ -14,6 +19,18 @@ const SPLIT = 'drop-shadow(7px 0 0 rgba(13,153,255,.85)) drop-shadow(-7px 0 0 rg
 export default function GlitchPortrait({ className = '' }) {
   const root = useRef(null)
   const state = useRef({ pose: 0, color: false, tl: null })
+  // A versão colorida só aparece no hover; baixá-la junto atrasaria a primeira tela.
+  const [colorReady, setColorReady] = useState(false)
+  useEffect(() => {
+    const go = () => setColorReady(true)
+    if (document.readyState === 'complete') {
+      const id = setTimeout(go, 1200)
+      return () => clearTimeout(id)
+    }
+    const onLoad = () => setTimeout(go, 600)
+    window.addEventListener('load', onLoad, { once: true })
+    return () => window.removeEventListener('load', onLoad)
+  }, [])
 
   useEffect(() => {
     const el = root.current
@@ -64,7 +81,16 @@ export default function GlitchPortrait({ className = '' }) {
       swap(from, img(pose, color))
     }
 
-    const enter = () => go(state.current.pose, true)
+    const enter = () => {
+      const cor = img(state.current.pose, true)
+      // Se a colorida ainda não chegou (hover logo no início), espera ela carregar para o glitch não mostrar vazio.
+      if (!cor.getAttribute('src') || !cor.complete) {
+        setColorReady(true)
+        cor.addEventListener('load', () => el.matches(':hover') && go(state.current.pose, true), { once: true })
+        return
+      }
+      go(state.current.pose, true)
+    }
     const leave = () => go(state.current.pose, false)
     const tap = (e) => {
       if (e.pointerType === 'mouse') return
@@ -99,7 +125,10 @@ export default function GlitchPortrait({ className = '' }) {
           <img
             key={`${pose}-${version}`}
             data-key={`${pose}-${version}`}
-            src={src(pose, version)}
+            sizes={SIZES}
+            srcSet={version === 'cor' && !colorReady ? undefined : srcSet(pose, version)}
+            src={version === 'cor' && !colorReady ? undefined : src(pose, version)}
+            fetchPriority={version === 'pb' ? 'high' : 'low'}
             alt={p === 0 && version === 'pb' ? 'Arthur Meireles, de braços cruzados, sorrindo' : ''}
             aria-hidden={p === 0 && version === 'pb' ? undefined : 'true'}
             width="1600"

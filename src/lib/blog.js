@@ -1,5 +1,3 @@
-import { marked } from 'marked'
-
 // Cada arquivo .md em src/content/blog vira um post. O nome do arquivo é a URL.
 const files = import.meta.glob('../content/blog/*.md', { query: '?raw', import: 'default', eager: true })
 
@@ -21,7 +19,7 @@ function parse(path, raw) {
     excerpt: meta.excerpt ?? '',
     tag: meta.tag ?? 'Design',
     minutes: Math.max(1, Math.round(body.split(/\s+/).length / 200)),
-    html: marked.parse(body),
+    body,
   }
 }
 
@@ -30,6 +28,12 @@ export const posts = Object.entries(files)
   .sort((a, b) => b.date.localeCompare(a.date))
 
 export const getPost = (slug) => posts.find((p) => p.slug === slug)
+
+// O conversor de Markdown é baixado só quando um artigo é aberto.
+export async function renderPost(post) {
+  const { marked } = await import('marked')
+  return marked.parse(post.body)
+}
 
 export const formatDate = (iso) =>
   iso ? new Date(iso + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }) : ''

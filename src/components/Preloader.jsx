@@ -2,9 +2,26 @@ import { useRef, useState } from 'react'
 import { gsap, reducedMotion, useGSAP } from '../lib/motion.js'
 
 // Tela de entrada: o nome é "montado" enquanto o contador sobe, depois a cortina abre.
+// Aparece só na primeira visita da sessão; ao recarregar ou voltar, o site abre direto.
+const SEEN_KEY = 'am:intro-seen'
+const seenThisSession = () => {
+  try {
+    return sessionStorage.getItem(SEEN_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+const markSeen = () => {
+  try {
+    sessionStorage.setItem(SEEN_KEY, '1')
+  } catch {
+    /* navegação privada sem storage: tudo bem, só mostra de novo */
+  }
+}
 export default function Preloader({ onDone }) {
   const root = useRef(null)
-  const [gone, setGone] = useState(false)
+  const [skip] = useState(seenThisSession)
+  const [gone, setGone] = useState(skip)
 
   useGSAP(
     () => {
@@ -12,7 +29,8 @@ export default function Preloader({ onDone }) {
         setGone(true)
         onDone()
       }
-      if (reducedMotion()) return finish()
+      if (skip || reducedMotion()) return finish()
+      markSeen()
 
       const count = { v: 0 }
       const num = root.current.querySelector('.preloader__count')

@@ -1,11 +1,21 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import NotFound from './NotFound.jsx'
-import { formatDate, getPost, posts } from '../lib/blog.js'
+import { formatDate, getPost, posts, renderPost } from '../lib/blog.js'
 
 export default function Post() {
   const { slug } = useParams()
   const post = getPost(slug)
+
+  const [html, setHtml] = useState('')
+  useEffect(() => {
+    let alive = true
+    setHtml('')
+    if (post) renderPost(post).then((h) => alive && setHtml(h))
+    return () => {
+      alive = false
+    }
+  }, [post])
 
   useEffect(() => {
     if (post) document.title = `${post.title} — Arthur Meireles`
@@ -22,7 +32,7 @@ export default function Post() {
         <h1>{post.title}</h1>
         <p className="lead">{post.excerpt}</p>
         {/* O HTML vem dos arquivos .md do próprio repositório (conteúdo confiável). */}
-        <div className="prose" dangerouslySetInnerHTML={{ __html: post.html }} />
+        <div className="prose" dangerouslySetInnerHTML={{ __html: html }} />
 
         {next !== post && (
           <Link to={`/blog/${next.slug}`} className="post__next" data-cursor="Ler">

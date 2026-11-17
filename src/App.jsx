@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import { ReadyContext, ScrollTrigger, scrollToTarget, startLenis } from './lib/motion.js'
 import Preloader from './components/Preloader.jsx'
@@ -6,11 +6,12 @@ import Nav from './components/Nav.jsx'
 import Cursor from './components/Cursor.jsx'
 import Contact from './sections/Contact.jsx'
 import Home from './pages/Home.jsx'
-import Projects from './pages/Projects.jsx'
-import Project from './pages/Project.jsx'
-import Blog from './pages/Blog.jsx'
-import Post from './pages/Post.jsx'
-import NotFound from './pages/NotFound.jsx'
+// Páginas internas viram arquivos separados, baixados só quando a pessoa entra nelas.
+const Projects = lazy(() => import('./pages/Projects.jsx'))
+const Project = lazy(() => import('./pages/Project.jsx'))
+const Blog = lazy(() => import('./pages/Blog.jsx'))
+const Post = lazy(() => import('./pages/Post.jsx'))
+const NotFound = lazy(() => import('./pages/NotFound.jsx'))
 
 function ScrollManager() {
   const { pathname, hash } = useLocation()
@@ -47,6 +48,7 @@ export default function App() {
       <Cursor />
       <Nav />
       <main key={pathname} className="page">
+        <Suspense fallback={<div className="page-loading" />}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/projetos" element={<Projects />} />
@@ -55,6 +57,7 @@ export default function App() {
           <Route path="/blog/:slug" element={<Post />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        </Suspense>
       </main>
       <Contact />
     </ReadyContext.Provider>

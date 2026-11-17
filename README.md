@@ -37,8 +37,11 @@ Páginas internas: `/projetos`, `/projetos/:slug`, `/blog`, `/blog/:slug`.
 - **Projetos:** `src/content/projects.js` (título, tipo, ano, resumo, `featured`)
 - **Imagens de projeto:** `public/work/<slug>/01.webp, 02.webp...` — depois rode `npm run images` para atualizar miniaturas e dimensões. Para escolher a capa, salve um `cover.png` ou `cover.jpg` na pasta do projeto.
 - **Capas dos projetos:** `public/work/<slug>/cover.png` é a capa do Behance e vira a miniatura usada em todo o site. Troque o arquivo e rode `npm run images`.
-- **Compartilhamento e SEO:** `npm run og` gera `public/og.jpg` (a imagem que aparece ao colar o link no WhatsApp ou LinkedIn), o `sitemap.xml` e o `robots.txt`. O domínio está em `scripts/make-og.mjs` e nas metatags do `index.html`; hoje é `https://arthurmeireles.cc`.
+- **Compartilhamento e SEO:** `npm run og` gera `public/og.jpg` (a imagem que aparece ao colar o link no WhatsApp ou LinkedIn), o `sitemap.xml` e o `robots.txt`. O domínio está em `scripts/make-og.mjs` e nas metatags do `index.html`; hoje é `https://arthurmeireles.com.br`.
 - **Formulário de contato:** `src/components/WhatsAppForm.jsx`. Não tem servidor: monta a mensagem e abre o WhatsApp. As opções de tipo de projeto ficam na lista `TYPES`.
+- **Arquivo no celular:** `src/components/ArchiveWheel.jsx` (roda de opções girada pelo scroll, com tique tátil em `src/lib/haptics.js`). No desktop continua a lista com prévia no hover.
+- **Capas originais:** ficam em `covers/<slug>.png`, fora do deploy; `npm run images` gera as miniaturas `thumb.webp` (1200 px) e `thumb-sm.webp` (640 px) e recomprime telas acima de 700 KB.
+- **Cache:** `public/_headers` define o cache na Cloudflare (arquivos com hash por 1 ano, imagens por 30 dias, HTML sempre revalidado).
 - **Blog:** um arquivo `.md` por artigo em `src/content/blog/`. O nome do arquivo vira a URL. Cabeçalho: `title`, `date` (AAAA-MM-DD), `tag`, `excerpt`.
 - **Cores e tipografia:** variáveis no topo de `src/styles/global.css`
 - **Fotos pessoais:** `public/img/`
