@@ -170,7 +170,7 @@
 .work__intro p { color: var(--muted); max-width: 26em; font-size: 17px; }
 
 /* Fileira de vidro líquido (WebGL). A faixa é larga e alta para a curva das bordas ter espaço. */
-.flexrow { position: relative; height: clamp(420px, 78vh, 820px); margin-top: clamp(8px, 2vh, 24px); }
+.flexrow { position: relative; height: clamp(440px, 84vh, 880px); margin-top: clamp(8px, 2vh, 24px); }
 .flexrow__canvas { display: block; width: 100%; height: 100%; touch-action: pan-y; cursor: grab; }
 .flexrow--fallback { height: auto; display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 24px var(--pad); scrollbar-width: none; }
 .flexrow--fallback::-webkit-scrollbar { display: none; }

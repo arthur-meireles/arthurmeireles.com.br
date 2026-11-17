@@ -15,6 +15,7 @@ uniform vec2 uSize;
 uniform float uBend;
 uniform float uShear;
 uniform float uStart;
+uniform float uTilt;
 varying vec2 vUv;
 varying float vEdge;
 void main() {
@@ -26,6 +27,9 @@ void main() {
   e *= e;
   float stretch = 1.0 + uBend * e;
   float y = p.y * uSize.y * stretch + uCenter.y;
+  // Fileira em diagonal: o lado direito sobe e o esquerdo desce, mais forte dentro da lente,
+  // então a carta parece "subir" ao passar de um lado para o outro.
+  y += uTilt * (0.35 * nx + 0.65 * e * sign(nx)) * uView.y;
   // Comprime um pouco na horizontal perto da borda, como vidro curvo.
   float xs = x - sign(nx) * e * uBend * 0.22 * uSize.x * abs(nx);
   // Inclinação proporcional à velocidade.
@@ -136,7 +140,7 @@ export default function FlexRow({ projects, onActive }) {
     gl.enableVertexAttribArray(aPos)
     gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0)
     const U = {}
-    for (const name of ['uView', 'uCenter', 'uSize', 'uBend', 'uShear', 'uStart', 'uTex', 'uImg', 'uRadius', 'uHover', 'uLoaded'])
+    for (const name of ['uView', 'uCenter', 'uSize', 'uBend', 'uShear', 'uStart', 'uTilt', 'uTex', 'uImg', 'uRadius', 'uHover', 'uLoaded'])
       U[name] = gl.getUniformLocation(prog, name)
     gl.enable(gl.BLEND)
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
@@ -192,9 +196,9 @@ export default function FlexRow({ projects, onActive }) {
       if (mobile) {
         // No celular a carta do centro fica menor que a tela, para só as vizinhas passarem pela lente.
         cardW = W * 0.64
-        cardH = Math.min(cardW / 1.28, H * 0.6)
+        cardH = Math.min(cardW / 1.28, H * 0.54)
       } else {
-        cardH = H * 0.6
+        cardH = H * 0.54
         cardW = Math.min(cardH * 1.28, W * 0.82)
       }
       gap = Math.max(14, W * 0.018)
@@ -312,8 +316,9 @@ export default function FlexRow({ projects, onActive }) {
       gl.clear(gl.COLOR_BUFFER_BIT)
       gl.uniform2f(U.uView, W, H)
       gl.uniform2f(U.uSize, cardW, cardH)
-      gl.uniform1f(U.uBend, mobile ? 0.45 : 0.7)
+      gl.uniform1f(U.uBend, mobile ? 0.4 : 0.5)
       gl.uniform1f(U.uStart, mobile ? 0.5 : 0.3)
+      gl.uniform1f(U.uTilt, mobile ? 0.05 : 0.07)
       gl.uniform1f(U.uShear, shear)
       gl.uniform1f(U.uRadius, Math.max(8, cardW * 0.025))
       gl.uniform1i(U.uTex, 0)
