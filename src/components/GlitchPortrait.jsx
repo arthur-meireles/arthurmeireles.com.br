@@ -4,7 +4,7 @@ import { gsap, reducedMotion } from '../lib/motion.js'
 // Retrato do hero com 2 poses x 2 versões (preto e branco / colorida).
 // - Parado: preto e branco, alternando de pose a cada alguns segundos.
 // - Hover (ou toque): a pose atual "glitcha" para a versão colorida.
-// As 4 imagens têm o mesmo tamanho e a P&B nasce da colorida, então ficam alinhadas.
+// Cada pose compartilha a mesma moldura entre as versões P&B e colorida, então o glitch fica alinhado.
 const POSES = ['a', 'b']
 const src = (pose, version) => `/img/arthur-${pose}-${version}.webp`
 const CYCLE_MS = 6000
